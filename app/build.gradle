@@ -10,6 +10,9 @@ android {
         versionCode 1
         versionName "1.0"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+
+        // support vector drawable on devices running versions lower than Android 5.0 (API level 21)
+        vectorDrawables.useSupportLibrary = true
     }
     buildTypes {
         release {
