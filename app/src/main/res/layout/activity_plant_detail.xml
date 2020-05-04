@@ -94,7 +94,8 @@
         app:layout_constraintRight_toRightOf="@id/plant_detail_image"
         android:textStyle="bold"
         android:textSize="32sp"
-        tools:text="123" />
+        tools:text="123"
+        android:gravity="center_horizontal" />
 
 
 
@@ -105,7 +106,7 @@
         android:layout_height="wrap_content"
         android:layout_margin="@dimen/fab_margin"
         android:onClick="onBackButtonClick"
-        android:src="@drawable/arrow_back_white"
+        app:srcCompat="@drawable/arrow_back_white"
         app:fabSize="auto"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintLeft_toLeftOf="parent" />
@@ -116,7 +117,7 @@
         android:layout_height="wrap_content"
         android:layout_margin="@dimen/fab_margin"
         android:onClick="onWaterButtonClick"
-        android:src="@drawable/water_drop_white"
+        app:srcCompat="@drawable/water_drop_white"
         app:fabSize="auto"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintLeft_toRightOf="@+id/back_button"
@@ -128,7 +129,7 @@
         android:layout_height="wrap_content"
         android:layout_margin="@dimen/fab_margin"
         android:onClick="onCutButtonClick"
-        android:src="@drawable/cut_white"
+        app:srcCompat="@drawable/cut_white"
         app:fabSize="auto"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintRight_toRightOf="parent" />
