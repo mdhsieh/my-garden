@@ -25,10 +25,12 @@ import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.example.android.mygarden.PlantWateringService;
 import com.example.android.mygarden.R;
 import com.example.android.mygarden.provider.PlantContract;
 import com.example.android.mygarden.utils.PlantUtils;
@@ -38,6 +40,8 @@ import static com.example.android.mygarden.provider.PlantContract.PATH_PLANTS;
 
 public class PlantDetailActivity extends AppCompatActivity
         implements LoaderManager.LoaderCallbacks<Cursor> {
+
+    public static final String TAG = PlantDetailActivity.class.getSimpleName();
 
     private static final int SINGLE_LOADER_ID = 200;
     public static final String EXTRA_PLANT_ID = "com.example.android.mygarden.extra.PLANT_ID";
@@ -126,5 +130,8 @@ public class PlantDetailActivity extends AppCompatActivity
                 BASE_CONTENT_URI.buildUpon().appendPath(PATH_PLANTS).build(), mPlantId);
         getContentResolver().delete(SINGLE_PLANT_URI, null, null);
         finish();
+
+        Log.d(TAG, "update plant widget after deleting plant");
+        PlantWateringService.startActionUpdatePlantWidget(this);
     }
 }

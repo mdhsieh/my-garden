@@ -21,13 +21,18 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 
+import com.example.android.mygarden.PlantWateringService;
 import com.example.android.mygarden.R;
 import com.example.android.mygarden.provider.PlantContract;
 
 public class AddPlantActivity extends AppCompatActivity {
+
+    public static final String TAG = AddPlantActivity.class.getSimpleName();
+
     private RecyclerView mTypesRecyclerView;
     private PlantTypesAdapter mTypesAdapter;
 
@@ -66,6 +71,9 @@ public class AddPlantActivity extends AppCompatActivity {
         getContentResolver().insert(PlantContract.PlantEntry.CONTENT_URI, contentValues);
         // Close this activity
         finish();
+
+        Log.d(TAG, "update plant widget after adding plant");
+        PlantWateringService.startActionUpdatePlantWidget(this);
     }
 
     public void onBackButtonClick(View view) {
