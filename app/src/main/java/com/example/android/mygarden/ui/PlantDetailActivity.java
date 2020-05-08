@@ -58,7 +58,7 @@ public class PlantDetailActivity extends AppCompatActivity
     }
 
     public void onWaterButtonClick(View view) {
-        //check if already dead then can't water
+        // Check if already dead then can't water
         Uri SINGLE_PLANT_URI = ContentUris.withAppendedId(
                 BASE_CONTENT_URI.buildUpon().appendPath(PATH_PLANTS).build(), mPlantId);
         Cursor cursor = getContentResolver().query(SINGLE_PLANT_URI, null, null, null, null);
