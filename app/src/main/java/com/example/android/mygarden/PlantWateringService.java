@@ -127,13 +127,6 @@ public class PlantWateringService extends IntentService {
             long wateredAt = cursor.getLong(waterTimeIndex);
             int plantType = cursor.getInt(plantTypeIndex);
 
-            /*Log.d(TAG, "created at: " + PlantUtils.getDisplayAgeInt(createdAt));
-            Log.d(TAG, "watered at: " + PlantUtils.getDisplayAgeInt(wateredAt));
-            Log.d(TAG, "type: " + PlantUtils.getPlantTypeName(this, plantType));
-
-            Log.d(TAG, "plant age: " + PlantUtils.getDisplayAgeInt(timeNow - createdAt));
-            Log.d(TAG, "water age: " + PlantUtils.getDisplayAgeInt(timeNow - wateredAt));*/
-
             // close the cursor once we're done using it
             cursor.close();
 

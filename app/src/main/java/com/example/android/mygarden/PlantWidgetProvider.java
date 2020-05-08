@@ -15,8 +15,6 @@ import com.example.android.mygarden.ui.MainActivity;
  */
 public class PlantWidgetProvider extends AppWidgetProvider {
 
-    public static final String TAG = PlantWidgetProvider.class.getSimpleName();
-
     static void updateAppWidget(Context context, AppWidgetManager appWidgetManager,
                                 int imgRes, int appWidgetId) {
 
@@ -50,8 +48,6 @@ public class PlantWidgetProvider extends AppWidgetProvider {
     @Override
     public void onUpdate(Context context, AppWidgetManager appWidgetManager, int[] appWidgetIds) {
         // Start the intent service update widget action. The service takes care of updating the widgets' UI.
-        // update widget UI on update
-        //Log.d(TAG, "update plant widget on update");
         PlantWateringService.startActionUpdatePlantWidgets(context);
     }
 
