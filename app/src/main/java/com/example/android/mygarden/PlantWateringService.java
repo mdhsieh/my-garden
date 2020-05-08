@@ -12,6 +12,7 @@ import android.net.Uri;
 import android.support.annotation.Nullable;
 import android.util.Log;
 
+import com.example.android.mygarden.provider.PlantContentProvider;
 import com.example.android.mygarden.provider.PlantContract;
 import com.example.android.mygarden.utils.PlantUtils;
 
@@ -31,21 +32,22 @@ public class PlantWateringService extends IntentService {
     public static final String ACTION_UPDATE_PLANT_WIDGETS =
             "com.example.android.mygarden.action.update_plant_widgets";
 
-    public static final String EXTRA_PLANT_ID = "plant_id";
+    public static final String EXTRA_PLANT_ID = "com.example.android.mygarden.extra.PLANT_ID";
 
     public PlantWateringService() {
         super(PlantWateringService.class.getSimpleName());
     }
 
     /**
-     * Starts this service to perform WaterPlants action with the given parameters. If
+     * Starts this service to perform WaterPlant action with the given parameters. If
      * the service is already performing a task this action will be queued.
      *
      * @see IntentService
      */
-    public static void startActionWaterPlants(Context context) {
+    public static void startActionWaterPlant(Context context, long plantId) {
         Intent intent = new Intent(context, PlantWateringService.class);
         intent.setAction(ACTION_WATER_PLANT);
+        intent.putExtra(EXTRA_PLANT_ID, plantId);
         context.startService(intent);
     }
 
@@ -70,11 +72,10 @@ public class PlantWateringService extends IntentService {
         if (intent != null) {
             final String action = intent.getAction();
 
-            final long plantId = intent.getLongExtra(EXTRA_PLANT_ID, PlantContract.INVALID_PLANT_ID);
-            Log.d(TAG, "id from intent is: " + plantId);
-
             if (ACTION_WATER_PLANT.equals(action)) {
-                handleActionWaterPlants(plantId);
+                final long plantId = intent.getLongExtra(EXTRA_PLANT_ID, PlantContract.INVALID_PLANT_ID);
+                Log.d(TAG, "id from intent is: " + plantId);
+                handleActionWaterPlant(plantId);
             }
             else if (ACTION_UPDATE_PLANT_WIDGETS.equals(action))
             {
@@ -87,41 +88,36 @@ public class PlantWateringService extends IntentService {
      * Handle action WaterPlant in the provided background thread with the provided
      * parameters.
      */
-    private void handleActionWaterPlants(long plantId) {
-        /*Uri PLANTS_URI = BASE_CONTENT_URI.buildUpon().appendPath(PATH_PLANTS).build();*/
+    private void handleActionWaterPlant(long plantId) {
         Uri SINGLE_PLANT_URI = ContentUris.withAppendedId(
                 BASE_CONTENT_URI.buildUpon().appendPath(PATH_PLANTS).build(), plantId);
         Log.d(TAG, "single plant content uri is: " + SINGLE_PLANT_URI.toString());
         ContentValues contentValues = new ContentValues();
         long timeNow = System.currentTimeMillis();
         contentValues.put(PlantContract.PlantEntry.COLUMN_LAST_WATERED_TIME, timeNow);
-        // Update only plants that are still alive
-        /* getContentResolver().update(
-                PLANTS_URI,
-                contentValues,
-                PlantContract.PlantEntry.COLUMN_LAST_WATERED_TIME + ">?",
-                new String[]{String.valueOf(timeNow - PlantUtils.MAX_AGE_WITHOUT_WATER)}); */
 
-        // update only the plant that needs watering the most
-
-        // check if already dead then can't water
+        /*// check if already dead then can't water
         Cursor cursor = getContentResolver().query(SINGLE_PLANT_URI, null, null, null, null);
         if (cursor == null || cursor.getCount() < 1)
             return; //can't find this plant!
         cursor.moveToFirst();
         long lastWatered = cursor.getLong(cursor.getColumnIndex(PlantContract.PlantEntry.COLUMN_LAST_WATERED_TIME));
         if ((timeNow - lastWatered) > PlantUtils.MAX_AGE_WITHOUT_WATER)
-            return; // plant already dead
+            return; // plant already dead*/
 
+        // Update only if that plant is still alive
         getContentResolver().update(
                 SINGLE_PLANT_URI,
                 contentValues,
-                null,
-                null);
+                PlantContract.PlantEntry.COLUMN_LAST_WATERED_TIME + ">?",
+                new String[]{String.valueOf(timeNow - PlantUtils.MAX_AGE_WITHOUT_WATER)});
 
-        Log.d(TAG, "updated water timestamp on plant with id " + plantId);
+        Log.d(TAG, "updated water plant with id " + plantId);
 
-        cursor.close();
+        // Always update widgets after watering plants
+        startActionUpdatePlantWidgets(this);
+
+        /*cursor.close();*/
     }
 
     /**
@@ -140,15 +136,22 @@ public class PlantWateringService extends IntentService {
 
         // Default image in case our garden is empty
         int plantImageRes = R.drawable.grass;
+        // Default to hide the water drop button
+        boolean canWater = false;
+        long plantId = PlantContract.INVALID_PLANT_ID;
 
         // Extract the plant details
         if (cursor != null && cursor.getCount() > 0)
         {
             cursor.moveToFirst();
 
+            int idIndex = cursor.getColumnIndex(PlantContract.PlantEntry._ID);
             int createTimeIndex = cursor.getColumnIndex(PlantContract.PlantEntry.COLUMN_CREATION_TIME);
             int waterTimeIndex = cursor.getColumnIndex(PlantContract.PlantEntry.COLUMN_LAST_WATERED_TIME);
             int plantTypeIndex = cursor.getColumnIndex(PlantContract.PlantEntry.COLUMN_PLANT_TYPE);
+
+            plantId = cursor.getLong(idIndex);
+            Log.d(TAG, "plant id is: " + plantId);
 
             long timeNow = System.currentTimeMillis();
 
@@ -164,13 +167,9 @@ public class PlantWateringService extends IntentService {
             Log.d(TAG, "plant age: " + PlantUtils.getDisplayAgeInt(timeNow - createdAt));
             Log.d(TAG, "water age: " + PlantUtils.getDisplayAgeInt(timeNow - wateredAt));*/
 
-
-            int plantIdIndex = cursor.getColumnIndex(PlantContract.PlantEntry._ID);
-            long plantId = cursor.getLong(plantIdIndex);
-            Log.d(TAG, "plant id is: " + plantId);
-
             // can't water the plant if it’s been less than MIN_AGE_BETWEEN_WATER since it was last watered
-            boolean canWater = timeNow - wateredAt >= PlantUtils.MIN_AGE_BETWEEN_WATER;
+            canWater = (timeNow - wateredAt) > PlantUtils.MIN_AGE_BETWEEN_WATER &&
+                    (timeNow - wateredAt) < PlantUtils.MAX_AGE_WITHOUT_WATER;
             Log.d(TAG, "Can water: " + canWater);
 
             // close the cursor once we're done using it

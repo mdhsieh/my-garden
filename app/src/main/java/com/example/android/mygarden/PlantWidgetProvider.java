@@ -21,9 +21,10 @@ public class PlantWidgetProvider extends AppWidgetProvider {
     public static final String TAG = PlantWidgetProvider.class.getSimpleName();
 
     static void updateAppWidget(Context context, AppWidgetManager appWidgetManager,
-                                int imgRes, long plantId, boolean canWater, int appWidgetId) {
+                                int imgRes, long plantId, boolean showWater, int appWidgetId) {
 
-        // launch DetailActivity if plant id is valid, otherwise launch MainActivity when clicked
+        // Set the click handler to open the DetailActivity for plant ID,
+        // or the MainActivity if plant ID is invalid
         Intent intent;
         if (plantId == PlantContract.INVALID_PLANT_ID)
         {
@@ -32,14 +33,15 @@ public class PlantWidgetProvider extends AppWidgetProvider {
         }
         else
         {
+            // Set on click to open the corresponding detail activity
             Log.d(TAG, "on click launch DetailActivity of plant with id " + plantId);
             intent = new Intent(context, PlantDetailActivity.class);
             intent.putExtra(PlantDetailActivity.EXTRA_PLANT_ID, plantId);
         }
 
         // Create an Intent to launch MainActivity or DetailActivity when clicked
-        /*Intent intent = new Intent(context, MainActivity.class);*/
-        PendingIntent pendingIntent = PendingIntent.getActivity(context, 0, intent, 0);
+        /* Intent intent = new Intent(context, MainActivity.class); */
+        PendingIntent pendingIntent = PendingIntent.getActivity(context, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
 
         // Construct the RemoteViews object
         RemoteViews views = new RemoteViews(context.getPackageName(), R.layout.plant_widget);
@@ -47,18 +49,19 @@ public class PlantWidgetProvider extends AppWidgetProvider {
         // Update image
         views.setImageViewResource(R.id.widget_plant_image, imgRes);
 
+        // Update plant ID text
         views.setTextViewText(R.id.widget_plant_id, String.valueOf(plantId));
 
         // Widgets allow click handlers to only launch pending intents
         views.setOnClickPendingIntent(R.id.widget_plant_image, pendingIntent);
 
-        // hide the water drop button in the widget if it’s been less than MIN_AGE_BETWEEN_WATER since it was last watered
-        if (canWater) {
+        // Show/hide the water drop button
+        if (showWater) {
 
             views.setViewVisibility(R.id.widget_water_button, View.VISIBLE);
             Log.d(TAG, "button visible, can water the plant with id " + plantId);
 
-            // Add the wateringservice click handler
+            // Add the watering service click handler
             Intent wateringIntent = new Intent(context, PlantWateringService.class);
             wateringIntent.setAction(PlantWateringService.ACTION_WATER_PLANT);
             wateringIntent.putExtra(PlantWateringService.EXTRA_PLANT_ID, plantId);
@@ -86,10 +89,10 @@ public class PlantWidgetProvider extends AppWidgetProvider {
     }
 
     public static void updatePlantWidgets(Context context, AppWidgetManager appWidgetManager,
-                                          int imgRes, long plantId, boolean canWater, int[] appWidgetIds)
+                                          int imgRes, long plantId, boolean showWater, int[] appWidgetIds)
     {
         for (int appWidgetId : appWidgetIds) {
-            updateAppWidget(context, appWidgetManager, imgRes, plantId, canWater, appWidgetId);
+            updateAppWidget(context, appWidgetManager, imgRes, plantId, showWater, appWidgetId);
         }
     }
 
