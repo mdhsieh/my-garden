@@ -129,9 +129,9 @@ public class PlantDetailActivity extends AppCompatActivity
         Uri SINGLE_PLANT_URI = ContentUris.withAppendedId(
                 BASE_CONTENT_URI.buildUpon().appendPath(PATH_PLANTS).build(), mPlantId);
         getContentResolver().delete(SINGLE_PLANT_URI, null, null);
+        // update widget UI after deleting plant
+        //Log.d(TAG, "update plant widget after deleting plant");
+        PlantWateringService.startActionUpdatePlantWidgets(this);
         finish();
-
-        Log.d(TAG, "update plant widget after deleting plant");
-        PlantWateringService.startActionUpdatePlantWidget(this);
     }
 }

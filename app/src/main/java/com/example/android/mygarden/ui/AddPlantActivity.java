@@ -69,11 +69,11 @@ public class AddPlantActivity extends AppCompatActivity {
         contentValues.put(PlantContract.PlantEntry.COLUMN_CREATION_TIME, timeNow);
         contentValues.put(PlantContract.PlantEntry.COLUMN_LAST_WATERED_TIME, timeNow);
         getContentResolver().insert(PlantContract.PlantEntry.CONTENT_URI, contentValues);
+        // update widget UI after adding plant
+        //Log.d(TAG, "update plant widget after adding plant");
+        PlantWateringService.startActionUpdatePlantWidgets(this);
         // Close this activity
         finish();
-
-        Log.d(TAG, "update plant widget after adding plant");
-        PlantWateringService.startActionUpdatePlantWidget(this);
     }
 
     public void onBackButtonClick(View view) {
