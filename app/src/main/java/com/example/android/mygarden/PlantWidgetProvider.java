@@ -28,13 +28,11 @@ public class PlantWidgetProvider extends AppWidgetProvider {
         Intent intent;
         if (plantId == PlantContract.INVALID_PLANT_ID)
         {
-            Log.d(TAG, "plant dead or no plants, on click launch MainActivity");
             intent = new Intent(context, MainActivity.class);
         }
         else
         {
             // Set on click to open the corresponding detail activity
-            Log.d(TAG, "on click launch DetailActivity of plant with id " + plantId);
             intent = new Intent(context, PlantDetailActivity.class);
             intent.putExtra(PlantDetailActivity.EXTRA_PLANT_ID, plantId);
         }
@@ -59,7 +57,6 @@ public class PlantWidgetProvider extends AppWidgetProvider {
         if (showWater) {
 
             views.setViewVisibility(R.id.widget_water_button, View.VISIBLE);
-            Log.d(TAG, "button visible, can water the plant with id " + plantId);
 
             // Add the watering service click handler
             Intent wateringIntent = new Intent(context, PlantWateringService.class);
@@ -75,7 +72,6 @@ public class PlantWidgetProvider extends AppWidgetProvider {
         else
         {
             views.setViewVisibility(R.id.widget_water_button, View.INVISIBLE);
-            Log.d(TAG, "button invisible, can't water the plant with id " + plantId);
         }
 
         // Instruct the widget manager to update the widget
