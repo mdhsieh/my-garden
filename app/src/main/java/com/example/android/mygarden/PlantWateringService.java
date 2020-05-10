@@ -68,6 +68,7 @@ public class PlantWateringService extends IntentService {
     /**
      * @param intent
      */
+    @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN)
     @Override
     protected void onHandleIntent(@Nullable Intent intent) {
         if (intent != null) {
@@ -95,15 +96,6 @@ public class PlantWateringService extends IntentService {
         long timeNow = System.currentTimeMillis();
         contentValues.put(PlantContract.PlantEntry.COLUMN_LAST_WATERED_TIME, timeNow);
 
-        /*// check if already dead then can't water
-        Cursor cursor = getContentResolver().query(SINGLE_PLANT_URI, null, null, null, null);
-        if (cursor == null || cursor.getCount() < 1)
-            return; //can't find this plant!
-        cursor.moveToFirst();
-        long lastWatered = cursor.getLong(cursor.getColumnIndex(PlantContract.PlantEntry.COLUMN_LAST_WATERED_TIME));
-        if ((timeNow - lastWatered) > PlantUtils.MAX_AGE_WITHOUT_WATER)
-            return; // plant already dead*/
-
         // Update only if that plant is still alive
         getContentResolver().update(
                 SINGLE_PLANT_URI,
@@ -113,8 +105,6 @@ public class PlantWateringService extends IntentService {
 
         // Always update widgets after watering plants
         startActionUpdatePlantWidgets(this);
-
-        /*cursor.close();*/
     }
 
     /**
@@ -170,6 +160,9 @@ public class PlantWateringService extends IntentService {
             AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(this);
             ComponentName name = new ComponentName(this, PlantWidgetProvider.class);
             int[] appWidgetIds = appWidgetManager.getAppWidgetIds(name);
+
+            // trigger the data update to handle GridView widgets and force a data refresh
+            appWidgetManager.notifyAppWidgetViewDataChanged(appWidgetIds, R.id.garden_grid_view);
 
             // Update all widgets
             PlantWidgetProvider.updatePlantWidgets(this, appWidgetManager,

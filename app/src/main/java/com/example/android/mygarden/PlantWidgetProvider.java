@@ -13,6 +13,7 @@ import android.view.View;
 import android.widget.RemoteViews;
 
 import com.example.android.mygarden.provider.PlantContract;
+import com.example.android.mygarden.ui.GridWidgetService;
 import com.example.android.mygarden.ui.MainActivity;
 import com.example.android.mygarden.ui.PlantDetailActivity;
 
@@ -29,6 +30,10 @@ public class PlantWidgetProvider extends AppWidgetProvider {
     static void updateAppWidget(Context context, AppWidgetManager appWidgetManager,
                                 int imgRes, long plantId, boolean showWater, int appWidgetId) {
 
+        // TODO (4): separate the updateAppWidget logic into getGardenGridRemoteView and getSinglePlantRemoteView
+        // TODO (5): Use getAppWidgetOptions to get widget width and use the appropriate RemoteView method
+        // TODO (6): Set the PendingIntent template in getGardenGridRemoteView to launch PlantDetailActivity
+
         Bundle widgetOptions = appWidgetManager.getAppWidgetOptions(appWidgetId);
         int minWidth = widgetOptions.getInt(AppWidgetManager.OPTION_APPWIDGET_MIN_WIDTH);
 
@@ -40,7 +45,7 @@ public class PlantWidgetProvider extends AppWidgetProvider {
         }
         else
         {
-            remoteViews = getGridLayoutRemoteViews(context);
+            remoteViews = getGardenGridRemoteViews(context);
         }
 
         /*
@@ -154,9 +159,23 @@ public class PlantWidgetProvider extends AppWidgetProvider {
         return views;
     }
 
-    private static RemoteViews getGridLayoutRemoteViews(Context context)
+    private static RemoteViews getGardenGridRemoteViews(Context context)
     {
-        return null;
+        RemoteViews views = new RemoteViews(context.getPackageName(), R.layout.widget_grid_view);
+
+        // set intent to act as an adapter to the GridView
+        Intent intent = new Intent(context, GridWidgetService.class);
+        views.setRemoteAdapter(R.id.garden_grid_view, intent);
+
+        // set the PlantDetailActivity to launch when clicked
+        Intent appIntent = new Intent(context, PlantDetailActivity.class);
+        PendingIntent appPendingIntent = PendingIntent.getActivity(context, 0, appIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+        views.setOnClickPendingIntent(R.id.widget_plant_image, appPendingIntent);
+
+        // handle empty gardens
+        views.setEmptyView(R.id.garden_grid_view, R.id.empty_view);
+
+        return views;
     }
 
     @Override
