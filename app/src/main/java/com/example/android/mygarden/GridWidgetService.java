@@ -1,4 +1,4 @@
-package com.example.android.mygarden.ui;
+package com.example.android.mygarden;
 
 import android.content.Context;
 import android.content.Intent;
@@ -9,8 +9,8 @@ import android.view.View;
 import android.widget.RemoteViews;
 import android.widget.RemoteViewsService;
 
-import com.example.android.mygarden.R;
 import com.example.android.mygarden.provider.PlantContract;
+import com.example.android.mygarden.ui.PlantDetailActivity;
 import com.example.android.mygarden.utils.PlantUtils;
 
 import static com.example.android.mygarden.provider.PlantContract.BASE_CONTENT_URI;
@@ -39,11 +39,17 @@ class GridRemoteViewsFactory implements RemoteViewsService.RemoteViewsFactory {
     public void onCreate() {
     }
 
+    // Called on start and when notifyAppWidgetViewDataChanged is called
     @Override
     public void onDataSetChanged() {
         Uri PLANTS_URI = BASE_CONTENT_URI.buildUpon().appendPath(PATH_PLANTS).build();
 
-        // get all plants by order they were created
+        if (cursor != null)
+        {
+            cursor.close();
+        }
+
+        // Get all plant info ordered by creation time
         cursor = context.getContentResolver().query(
                 PLANTS_URI,
                 null,
@@ -59,7 +65,8 @@ class GridRemoteViewsFactory implements RemoteViewsService.RemoteViewsFactory {
 
     @Override
     public int getCount() {
-        if (cursor != null) {
+        if (cursor != null)
+        {
             return cursor.getCount();
         }
         else
@@ -68,15 +75,21 @@ class GridRemoteViewsFactory implements RemoteViewsService.RemoteViewsFactory {
         }
     }
 
+    /**
+     * This method acts like the onBindViewHolder method in an Adapter
+     *
+     * @param position The current position of the item in the GridView to be displayed
+     * @return The RemoteViews object to display for the provided position
+     */
     @Override
-    public RemoteViews getViewAt(int i) {
+    public RemoteViews getViewAt(int position) {
 
-        // extract details of the plant at index i
+        // extract details of the plant at the position
         int plantImageRes = R.drawable.grass;
         long plantId = PlantContract.INVALID_PLANT_ID;
         if (cursor != null && cursor.getCount() > 0) {
 
-            cursor.moveToPosition(i);
+            cursor.moveToPosition(position);
 
             int idIndex = cursor.getColumnIndex(PlantContract.PlantEntry._ID);
             int createTimeIndex = cursor.getColumnIndex(PlantContract.PlantEntry.COLUMN_CREATION_TIME);
@@ -99,10 +112,11 @@ class GridRemoteViewsFactory implements RemoteViewsService.RemoteViewsFactory {
         // update ID text
         views.setTextViewText(R.id.widget_plant_id, String.valueOf(plantId));
 
-        // always hide the water drop button in GridView mode.
-        // we don't want it cluttering the GridView
+        // Always hide the water drop button in GridView mode.
+        // We don't want it cluttering the GridView
         views.setViewVisibility(R.id.widget_water_button, View.GONE);
 
+        // Fill in the onClick PendingIntent Template using the specific plant Id for each item individually
         Bundle extras = new Bundle();
         extras.putLong(PlantDetailActivity.EXTRA_PLANT_ID, plantId);
         Intent fillInIntent = new Intent();
@@ -119,7 +133,7 @@ class GridRemoteViewsFactory implements RemoteViewsService.RemoteViewsFactory {
 
     @Override
     public int getViewTypeCount() {
-        // treat all views as the same
+        // Treat all items in the GridView  the same
         return 1;
     }
 

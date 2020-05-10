@@ -161,7 +161,7 @@ public class PlantWateringService extends IntentService {
             ComponentName name = new ComponentName(this, PlantWidgetProvider.class);
             int[] appWidgetIds = appWidgetManager.getAppWidgetIds(name);
 
-            // trigger the data update to handle GridView widgets and force a data refresh
+            // Trigger the data update to handle the GridView widgets and force a data refresh
             appWidgetManager.notifyAppWidgetViewDataChanged(appWidgetIds, R.id.garden_grid_view);
 
             // Update all widgets

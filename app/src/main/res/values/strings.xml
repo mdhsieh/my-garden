@@ -17,4 +17,6 @@
 
     <string name="widget_plant_image_desc">Plant Image</string>
     <string name="widget_water_button_desc">Water Button</string>
+    
+    <string name="empty_view_text">Garden is empty!</string>
 </resources>
