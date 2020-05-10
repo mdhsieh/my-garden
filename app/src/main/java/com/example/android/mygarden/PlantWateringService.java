@@ -9,7 +9,9 @@ import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
+import android.os.Build;
 import android.support.annotation.Nullable;
+import android.support.annotation.RequiresApi;
 import android.util.Log;
 
 import com.example.android.mygarden.provider.PlantContract;
@@ -118,6 +120,7 @@ public class PlantWateringService extends IntentService {
     /**
      * Handle action UpdatePlantWidgets in the provided background thread
      */
+    @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN)
     private void handleActionUpdatePlantWidgets()
     {
         // Query to get the plant that's most in need for water (last watered)
