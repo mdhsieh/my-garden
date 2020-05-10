@@ -12,7 +12,6 @@ import android.net.Uri;
 import android.os.Build;
 import android.support.annotation.Nullable;
 import android.support.annotation.RequiresApi;
-import android.util.Log;
 
 import com.example.android.mygarden.provider.PlantContract;
 import com.example.android.mygarden.utils.PlantUtils;
@@ -25,8 +24,6 @@ import static com.example.android.mygarden.provider.PlantContract.PATH_PLANTS;
  * a service on a separate handler thread.
  */
 public class PlantWateringService extends IntentService {
-
-    public static final String TAG = PlantWateringService.class.getSimpleName();
 
     public static final String ACTION_WATER_PLANT =
             "com.example.android.mygarden.action.water_plants";

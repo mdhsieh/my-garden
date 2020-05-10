@@ -20,8 +20,6 @@ import com.example.android.mygarden.ui.PlantDetailActivity;
  */
 public class PlantWidgetProvider extends AppWidgetProvider {
 
-    public static final String TAG = PlantWidgetProvider.class.getSimpleName();
-
     // when a widget's width in dps is larger than this, display a GridView,
     // otherwise display single plant
     public static final int SINGLE_PLANT_WIDTH = 300;
