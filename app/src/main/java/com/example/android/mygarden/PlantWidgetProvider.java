@@ -170,7 +170,7 @@ public class PlantWidgetProvider extends AppWidgetProvider {
         // set the PlantDetailActivity to launch when clicked
         Intent appIntent = new Intent(context, PlantDetailActivity.class);
         PendingIntent appPendingIntent = PendingIntent.getActivity(context, 0, appIntent, PendingIntent.FLAG_UPDATE_CURRENT);
-        views.setOnClickPendingIntent(R.id.widget_plant_image, appPendingIntent);
+        views.setPendingIntentTemplate(R.id.garden_grid_view, appPendingIntent);
 
         // handle empty gardens
         views.setEmptyView(R.id.garden_grid_view, R.id.empty_view);

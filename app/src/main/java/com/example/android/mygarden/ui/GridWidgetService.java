@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
+import android.os.Bundle;
 import android.view.View;
 import android.widget.RemoteViews;
 import android.widget.RemoteViewsService;
@@ -101,6 +102,12 @@ class GridRemoteViewsFactory implements RemoteViewsService.RemoteViewsFactory {
         // always hide the water drop button in GridView mode.
         // we don't want it cluttering the GridView
         views.setViewVisibility(R.id.widget_water_button, View.GONE);
+
+        Bundle extras = new Bundle();
+        extras.putLong(PlantDetailActivity.EXTRA_PLANT_ID, plantId);
+        Intent fillInIntent = new Intent();
+        fillInIntent.putExtras(extras);
+        views.setOnClickFillInIntent(R.id.widget_plant_image, fillInIntent);
 
         return views;
     }
